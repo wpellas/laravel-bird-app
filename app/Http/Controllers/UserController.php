@@ -158,4 +158,18 @@ class UserController extends Controller
             'docTitle' => "Profiles that " . $user->username . " follows."
         ]);
     }
+
+    public function loginApi(Request $request) {
+        $incomingFields = $request->validate([
+            'username' => 'required',
+            'password' => 'required'
+        ]);
+
+        if (auth()->attempt($incomingFields)) {
+            $user = User::where('username', $incomingFields['username'])->first();
+            $token = $user->createToken('ourapptoken')->plainTextToken;
+            return $token;
+        }
+        return 'token incorrect';
+    }
 }
